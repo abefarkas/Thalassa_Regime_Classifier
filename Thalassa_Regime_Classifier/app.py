@@ -2,12 +2,8 @@ import streamlit as st
 import numpy as np # np mean, np random
 import pandas as pd
 import time # to simulate a real time data, time loop
-import plotly.express as px # interactive charts
-
-
-# read csv from a github repo
-df = pd.read_csv("https://raw.githubusercontent.com/Lexie88rus/bank-marketing-analysis/master/bank.csv")
-
+import plotly.express as px
+import plotly.graph_objects as go
 
 st.set_page_config(
     page_title = 'Real-Time Thalassa Regime Classifier',
@@ -34,17 +30,18 @@ placeholder = st.empty()
 # near real-time / live feed simulation
 
 for seconds in range(200):
+    df = pd.read_csv("data/df_clean.csv")
 #while True:
 
-    df['age_new'] = df['age'] * np.random.choice(range(1,5))
-    df['balance_new'] = df['balance'] * np.random.choice(range(1,5))
+    #df['age_new'] = df['age'] * np.random.choice(range(1,5))
+    #df['balance_new'] = df['balance'] * np.random.choice(range(1,5))
 
     # creating KPIs
-    avg_age = np.mean(df['age_new'])
+    #avg_age = np.mean(df['age_new'])
 
-    count_married = int(df[(df["marital"]=='married')]['marital'].count() + np.random.choice(range(1,30)))
+    #count_married = int(df[(df["marital"]=='married')]['marital'].count() + np.random.choice(range(1,30)))
 
-    balance = np.mean(df['balance_new'])
+    #balance = np.mean(df['balance_new'])
 
     with placeholder.container():
         # create three columns
@@ -60,11 +57,16 @@ for seconds in range(200):
         fig_col1, fig_col2 = st.columns(2)
         with fig_col1:
             st.markdown("### Gauge")
-            fig = px.density_heatmap(data_frame=df, y = 'age_new', x = 'marital')
+            fig = go.Figure(go.Indicator(
+                mode = "gauge+number",
+                value = 250,
+                domain = {'x': [0, 1], 'y': [0, 1]},
+                title = {'text': "Volatility"}))
             st.write(fig)
+
         with fig_col2:
             st.markdown("### Live Predictions")
-            fig2 = px.histogram(data_frame = df, x = 'age_new')
+            fig2 = px.scatter(data_frame = df, x = df['primary_key'], y = df['bp1'])
             st.write(fig2)
         #st.markdown("### Detailed Data View")
         #st.dataframe(df)

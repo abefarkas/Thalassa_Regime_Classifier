@@ -1,4 +1,5 @@
 import json
+from sklearn.metrics import top_k_accuracy_score
 import websocket
 import datetime
 import numpy as np
@@ -15,9 +16,10 @@ class StreamingData():
 
     def handle_trades(self,json_message):
         df = pd.DataFrame.from_dict(self.my_json(json_message))
-        self.df_0 = pd.concat([self.df_0, df], axis=0)
-        df_clean = self.my_return().dropna()
+        #self.df_0 = pd.concat([self.df_0, df], axis=0)
+        #df_clean = self.my_return().dropna()
         # save to local machine
+        df.to_csv('data/df_clean.csv')
 
     def my_return(self):
         return self.preprocessing_streamed_data(self.df_0, rolling_window=2)
