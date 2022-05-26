@@ -5,11 +5,10 @@ import os
 import pandas as pd
 from datetime import datetime, timezone
 
-def get_data(csv_file):
+def get_data(path_to_csv_file):
 
     # getting data
-    path_to_raw_data = os.path.dirname(os.getcwd())
-    df_ob = pd.read_csv(os.path.join(path_to_raw_data,'raw_data',csv_file))
+    df_ob = pd.read_csv(path_to_csv_file)
 
     # from unix timestamp to human date
     unix_timestamp = lambda x: datetime.fromtimestamp(x/1000.0, tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
@@ -31,4 +30,5 @@ def get_data(csv_file):
     return df_agg
 
 if __name__=="__main__":
-    print(get_data('BTCUSDT_S_DEPTH_20220519.csv'))
+    path_to_raw_data = os.path.dirname(os.getcwd())
+    print(get_data(os.path.join(path_to_raw_data,'raw_data','BTCUSDT_S_DEPTH_20220519.csv')))
