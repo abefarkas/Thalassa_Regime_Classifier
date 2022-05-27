@@ -40,7 +40,7 @@ class StreamingData():
         df_agg = df_agg.dropna().tail(50)
 
         return df_agg
-        
+
     def my_json(self, json_message):
         '''transforming the data to a dict type'''
         size = len(np.array(json_message['bids'])[:,0])    
@@ -52,7 +52,7 @@ class StreamingData():
             **{'as'+str(key):[float(value)] for key,value in zip(np.arange(0,size)+1,np.array(json_message['asks'])[:,1])}}
     
     def my_json_0(self, size):
-        '''transforming the data to a dict type'''    
+      '''transforming the data to a dict type'''
         return {
             **{'primary_key':[datetime.now()]},
             **{'bp'+str(key):[value] for key,value in zip(np.arange(0,size)+1,(np.arange(0,size)+1)*np.nan)},
@@ -66,4 +66,3 @@ if __name__=='__main__':
     w.start()
     while True:
         print(w.get_stream_data(rolling_window=30))
-        
