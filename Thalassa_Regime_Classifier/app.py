@@ -21,7 +21,7 @@ placeholder = st.empty()
 # near real-time / live feed simulation
 
 for seconds in range(200):
-    df = pd.read_csv("df_clean.csv")
+    df = pd.read_csv("predicted_values.csv")
 
     with placeholder.container():
 
@@ -30,15 +30,19 @@ for seconds in range(200):
         with fig_col1:
             st.markdown("### Gauge")
             fig = go.Figure(go.Indicator(
-                mode = "gauge+number",
-                value = 250,
                 domain = {'x': [0, 1], 'y': [0, 1]},
-                title = {'text': "Volatility"}))
+                value = df['bs1'].iat[-1],
+                mode = "gauge+number",
+                title = {'text': "Volatility"},
+                gauge = {'axis': {'range': [None, 20]},
+                        'steps' : [
+                            {'range': [0, 9.999999], 'color': "lightgray"},
+                            {'range': [10,20], 'color': "gray"}]}))
             st.write(fig)
 
         with fig_col2:
             st.markdown("### Live Predictions")
-            fig2 = px.scatter(data_frame = df, x = df['primary_key'], y = df['bp1'])
+            fig2 = px.line(data_frame = df, x = df['primary_key'], y = df['bp1'])
             st.write(fig2)
 
         time.sleep(1)
