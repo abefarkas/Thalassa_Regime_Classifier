@@ -14,5 +14,4 @@ setup(name='Thalassa_Regime_Classifier',
       # include_package_data: to install data from MANIFEST.in
       include_package_data=True,
       scripts=['scripts/Thalassa_Regime_Classifier-run'],
-      install_requires=requirements,
       zip_safe=False)
