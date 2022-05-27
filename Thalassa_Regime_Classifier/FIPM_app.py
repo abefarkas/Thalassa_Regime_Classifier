@@ -3,10 +3,10 @@ import numpy as np # np mean, np random
 import pandas as pd
 import time # to simulate a real time data, time loop
 import plotly.express as px # interactive charts
+import plotly.graph_objects as go
 
 
-# read csv from a github repo
-df = pd.read_csv("https://raw.githubusercontent.com/Lexie88rus/bank-marketing-analysis/master/bank.csv")
+
 
 
 st.set_page_config(
@@ -34,18 +34,11 @@ placeholder = st.empty()
 # near real-time / live feed simulation
 
 for seconds in range(200):
+    # read csv
+    df = pd.read_csv("predicted_values.csv")
 #while True:
 
-    df['age_new'] = df['age'] * np.random.choice(range(1,5))
-    df['balance_new'] = df['balance'] * np.random.choice(range(1,5))
-
-    # creating KPIs
-    avg_age = np.mean(df['age_new'])
-
-    count_married = int(df[(df["marital"]=='married')]['marital'].count() + np.random.choice(range(1,30)))
-
-    balance = np.mean(df['balance_new'])
-
+    
     with placeholder.container():
         # create three columns
         #kpi1, kpi2, kpi3 = st.columns(3)
@@ -57,16 +50,33 @@ for seconds in range(200):
 
         # create two columns for charts
 
-        fig_col1, fig_col2 = st.columns(2)
+        fig_col1, = st.columns(1)
         with fig_col1:
             st.markdown("### Gauge")
-            fig = px.density_heatmap(data_frame=df, y = 'age_new', x = 'marital')
+            
+            
+            
+            bids = list(df[df.columns[pd.Series(df.columns).str.startswith('bs')][::-1]].tail(1).values[0])
+            bids = list([np.nan]*len(bids))+bids
+                        
+            asks = list(df[df.columns[pd.Series(df.columns).str.startswith('as')]].tail(1).values[0])
+            asks = asks+list([np.nan]*len(asks))
+            
+            bids_price = list(df[df.columns[pd.Series(df.columns).str.startswith('bp')][::-1]].tail(1).values[0])
+            asks_price = list(df[df.columns[pd.Series(df.columns).str.startswith('ap')]].tail(1).values[0])
+            x = bids_price + asks_price
+                        
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=x, y=bids, mode='lines', fill='tozeroy', fillcolor='rgba(0,0,255,.75)')) # fill down to xaxis
+            fig.add_trace(go.Scatter(x=x, y=asks, mode='lines', fill='tozeroy', fillcolor='rgba(255,0,0,.4)')) # fill to trace0 y
             st.write(fig)
-        with fig_col2:
-            st.markdown("### Live Predictions")
-            fig2 = px.histogram(data_frame = df, x = 'age_new')
-            st.write(fig2)
+        # with fig_col2:
+        #     st.markdown("### Live Predictions")
+        #     fig2 = px.histogram(data_frame = df, x = 'age_new')
+        #     st.write(fig2)
         #st.markdown("### Detailed Data View")
         #st.dataframe(df)
         time.sleep(1)
     #placeholder.empty()
+
+
