@@ -8,6 +8,11 @@ wheel>=0.29
 numpy
 pandas
 scikit-learn
+scipy
+statsmodels
+matplotlib
+matplotlib-inline
+seaborn
 
 # tests/linter
 black
@@ -32,3 +37,12 @@ termcolor
 plotly==5.8.0
 plotly-express==0.4.1
 streamlit
+typing_extensions==4.0.1
+time
+json
+datetime
+websocket-client
+watchdog
+os
+datetime
+importlib-resources
