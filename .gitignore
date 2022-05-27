@@ -6,3 +6,4 @@ raw_data/
 *.csv
 **/__pycache__/
 .env
+Thalassa_Regime_Classifier/predicted_values.csv
