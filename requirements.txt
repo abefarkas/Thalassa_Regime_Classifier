@@ -29,6 +29,6 @@ memoized-property
 termcolor
 
 # app
-plotly.express
-plotly.graph_objects
+plotly==5.8.0
+plotly-express==0.4.1
 streamlit
