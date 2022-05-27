@@ -38,7 +38,6 @@ plotly==5.8.0
 plotly-express==0.4.1
 streamlit
 typing_extensions==4.0.1
-time
 json
 datetime
 websocket-client
