@@ -30,4 +30,5 @@ termcolor
 
 # app
 plotly.express
+plotly.graph_objects
 streamlit
