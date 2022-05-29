@@ -8,6 +8,11 @@ wheel>=0.29
 numpy
 pandas
 scikit-learn
+scipy
+statsmodels
+matplotlib
+matplotlib-inline
+seaborn
 
 # tests/linter
 black
@@ -27,3 +32,11 @@ six>=1.14
 joblib
 memoized-property
 termcolor
+
+# app
+plotly==5.8.0
+plotly-express==0.4.1
+streamlit
+typing_extensions==4.0.1
+websocket-client
+watchdog
