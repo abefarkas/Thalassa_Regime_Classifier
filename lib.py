@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 
 class FinancialFeatures():
-    def __init__(self, file_path):
-        self.data = pd.read_csv(file_path)
+    def __init__(self, data):
+        self.data = data
 
 
 
