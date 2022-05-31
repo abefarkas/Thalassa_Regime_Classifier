@@ -4,6 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime, timezone, timedelta
+import joblib
 
 class DataModelPipeline():
     def __init__(self):
@@ -100,7 +101,9 @@ if __name__=='__main__':
     # 2. fit the models
     arima_fitted = arima.fit()
     arima_fitted.summary()
+    joblib.dump(arima_fitted,'arima_fitted.joblib')
     
+    arima_fitted = joblib.load('arima_fitted.joblib')
     # predicting a model with new values for endogenous variable
     predictions = data_model_pipeline.predict(model=arima_fitted, new_data=[1], steps=2)
     print(predictions)
