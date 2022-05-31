@@ -15,13 +15,16 @@ pipeline = joblib.load('../pipeline.joblib')
 financial_features = FinancialFeatures()
 
 st.set_page_config(
-    page_title = 'Real-Time Thalassa Regime Classifier',
+    page_title = 'Thalassa app',
     page_icon = '🌊',
     layout = 'wide'
 )
 
 # dashboard title
-st.title("Real-Time / Thalassa Regime Classifier")
+st.title("🌊 Thalassa")
+st.write('''
+         This app helps decision-making by predicting the volability regime of the cryptomarket in real-time.
+         ''')
 
 # creating two single-element container
 placeholder1 = st.empty()
@@ -46,11 +49,13 @@ for seconds in range(500):
         # create two columns for charts
         fig_col1, fig_col2 = st.columns(2)
         with fig_col1:
-            st.markdown("### Predicted volatility")
+            st.markdown("### Volatility Gauge")
             fig1 = go.Figure(go.Indicator(
                 domain = {'x': [0, 1], 'y': [0, 1]},
                 value = df['bs1'].iat[-1],
-                mode = "gauge+number",
+                mode = "gauge+number+delta",
+                delta = {'reference': 1}, # put here the right delta (high vs low volatility)
+                title = {'text': "Predicted volatility"},
                 gauge = {'axis': {'range': [None, 20]},
                         'steps' : [
                             {'range': [0, 9.999999], 'color': "lightgray"},
@@ -58,7 +63,7 @@ for seconds in range(500):
             st.write(fig1)
 
         with fig_col2:
-            st.markdown("### Bids and asks")
+            st.markdown("### Depth Chart")
 
             bids = list(df[df.columns[pd.Series(df.columns).str.startswith('bs')][::-1]].tail(1).values[0])
             bids = bids+list([np.nan]*len(bids))
@@ -79,8 +84,10 @@ for seconds in range(500):
             fig2.add_trace(go.Scatter(x=x, y=bids, mode='lines', fill='tozeroy', name='Bids')) # fill down to xaxis
             fig2.add_trace(go.Scatter(x=x, y=asks, mode='lines', fill='tozeroy', name='Asks')) # fill to trace0 y
             fig2.update_xaxes(title='Prices')
-            fig2.update_yaxes(title='Size')
+            fig2.update_yaxes(title='Size', range=(0,25))
             st.write(fig2)
+
+        #st.dataframe(df.head(5))
 
     #with placeholder2.container():
 
