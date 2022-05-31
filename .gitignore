@@ -8,4 +8,3 @@ raw_data/
 .env
 Thalassa_Regime_Classifier/predicted_values.csv
 Thalassa_Regime_Classifier/nohup.out
-**.joblib
