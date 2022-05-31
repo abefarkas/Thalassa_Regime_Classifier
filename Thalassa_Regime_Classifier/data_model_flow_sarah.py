@@ -39,7 +39,6 @@ class DataModelPipeline():
         # log_returns
         self.data['log_returns'] = self.data.log_price.diff()
 
-
         # self.data.set_index('primary_key', inplace=True)
         # self.data = self.data.groupby(pd.Grouper(key='primary_key', axis=0, freq='M')).std()
         # print(self.data)
@@ -53,9 +52,6 @@ class DataModelPipeline():
         # y.reset_index(inplace=True)
         self.data['realized_volatility'] = y['log_returns']
 
-
-
-
         # self.data['realized_volatility'] = np.std(self.data.log_returns)
 
         # volatility_t+1
@@ -65,7 +61,6 @@ class DataModelPipeline():
         self.data.drop(columns=['Unnamed: 0'], inplace=True)
 
         return self.data
-
 
     def pipeline(self, data):
         data = data.dropna().reset_index(drop=True)
@@ -95,10 +90,6 @@ if __name__=='__main__':
     # getting endogenous and exogenous variables to be used
     # to train a model
     y, X = data_model_pipeline.pipeline(df)
-    print('Y: ', y.tail(5))
-    print('--------------------------------')
-    print('X: ', X.tail(5))
-    print('--------------------------------')
 
     # Training a model
     from statsmodels.tsa.arima.model import ARIMA
@@ -112,5 +103,5 @@ if __name__=='__main__':
 
     arima_fitted = joblib.load('arima_fitted.joblib')
     # predicting a model with new values for endogenous variable
-    predictions = data_model_pipeline.predict(model=arima_fitted, steps=2)
+    predictions = data_model_pipeline.predict(model=arima_fitted, steps=1)
     print(predictions)
