@@ -14,7 +14,7 @@ from data_model_flow_sarah import DataModelPipeline #TO CHANGE
 
 # instanciate the data-model-flow class
 data_model_pipeline = DataModelPipeline()
-arima_fitted = joblib.load('../arima_fitted.joblib')
+arima_fitted = joblib.load('arima_fitted.joblib')
 
 # ------------------------------------------------------------------------------
 
