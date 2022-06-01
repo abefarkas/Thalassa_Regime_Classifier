@@ -10,4 +10,4 @@ COPY arima_fitted.joblib .
 
 COPY start.sh .
 
-CMD sh /app/start.sh
+CMD /app/start.sh
