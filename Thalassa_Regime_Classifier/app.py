@@ -1,6 +1,6 @@
 #from asyncio.windows_utils import pipe
 from matplotlib.axis import XAxis
-from matplotlib.pyplot import title
+from matplotlib.pyplot import title, xlabel, ylabel
 import streamlit as st
 import numpy as np # np mean, np random
 import pandas as pd
@@ -14,7 +14,7 @@ from data_model_flow import DataModelPipeline
 
 # instanciate the data-model-flow class
 data_model_pipeline = DataModelPipeline()
-model = joblib.load('model.joblib')
+model = joblib.load('../model.joblib')
 
 # ------------------------------------------------------------------------------
 
@@ -41,7 +41,8 @@ for seconds in range(500):
 
     df = data_model_pipeline.financial_features(data)
     y, X = data_model_pipeline.pipeline(df)
-    predictions = data_model_pipeline.predict(model=model, steps=1)
+    predictions = data_model_pipeline.predict(model=model)
+    print(predictions)
 
     with placeholder1.container():
 
@@ -51,14 +52,14 @@ for seconds in range(500):
             st.markdown("### Volatility Gauge")
             fig1 = go.Figure(go.Indicator(
                 domain = {'x': [0, 1], 'y': [0, 1]},
-                value = 1000*predictions['realized_volatility'].iloc[-1],
+                value = predictions['realized_volatility'].iloc[-1],
                 mode = "gauge+number+delta",
                 delta = {'reference': 0.02}, # put here the right delta (high vs low volatility)
-                title = {'text': "Predicted volatility"},
-                gauge = {'axis': {'range': [None, 0.04]},
+                title = {'text': "Predicted volatility (30 seconds from now)"},
+                gauge = {'axis': {'range': [None, y.max()[0]]},
                         'steps' : [
-                            {'range': [0, 0.02], 'color': "lightgray"},
-                            {'range': [0.02,0.04], 'color': "gray"}]}))
+                            {'range': [0, (y.max()[0]/2)], 'color': "lightgray"},
+                            {'range': [(y.max()[0]/2),y.max()[0]], 'color': "gray"}]}))
             st.write(fig1)
 
         with fig_col2:
@@ -81,17 +82,25 @@ for seconds in range(500):
             fig2.add_trace(go.Scatter(x=x, y=bids, mode='lines', fill='tozeroy', name='Bids')) # fill down to xaxis
             fig2.add_trace(go.Scatter(x=x, y=asks, mode='lines', fill='tozeroy', name='Asks')) # fill to trace0 y
             fig2.update_xaxes(title='Prices')
-            fig2.update_yaxes(title='Size', range=(0,10))
+            fig2.update_yaxes(title='Size', range=(0,np.max(bids+asks)))
             st.write(fig2)
 
 
     with placeholder2.container():
 
-        fig_col3, = st.columns(1)
-        with fig_col3:
-            st.markdown("### Predictions")
-            fig3 = px.scatter(data_frame = predictions, x = predictions.index, y = predictions['realized_volatility'])
-            st.write(fig3)
+        #fig_col3, = st.columns(1)
+        #with fig_col3:
+        st.markdown("### Streamed data")
+        fig3 = px.line(
+            data_frame = y,
+            x = y.index,
+            y = y['realized_volatility'])
+
+        fig3.update_layout(
+            xaxis_title = 'Time',
+            yaxis_title = 'Realized volatility'
+        )
+        st.write(fig3)
 
         #with fig_col4:
         #    st.markdown("### Predictions")
