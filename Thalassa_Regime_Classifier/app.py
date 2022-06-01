@@ -8,13 +8,13 @@ import time # to simulate a real time data, time loop
 import plotly.express as px
 import plotly.graph_objects as go
 import joblib
-from data_model_flow_sarah import DataModelPipeline #TO CHANGE
+from data_model_flow import DataModelPipeline
 
 # ------------------------------------------------------------------------------
 
 # instanciate the data-model-flow class
 data_model_pipeline = DataModelPipeline()
-arima_fitted = joblib.load('arima_fitted.joblib')
+model = joblib.load('model.joblib')
 
 # ------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ for seconds in range(500):
 
     df = data_model_pipeline.financial_features(data)
     y, X = data_model_pipeline.pipeline(df)
-    predictions = data_model_pipeline.predict(model=arima_fitted, steps=1)
+    predictions = data_model_pipeline.predict(model=model, steps=1)
 
     with placeholder1.container():
 

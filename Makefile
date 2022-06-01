@@ -56,7 +56,7 @@ pypi:
 
 
 # ----------------------------------
-#      STREAMLIT / HEROKU
+#      STREAMLIT
 # ----------------------------------
 run_streamlit:
     streamlit run app.py

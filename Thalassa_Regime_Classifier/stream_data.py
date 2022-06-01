@@ -33,7 +33,11 @@ class StreamingData():
         # aggregating by seconds
         df_agg = df_ob.groupby(pd.Grouper(key='primary_key', axis=0, freq='S')).mean()
         # applying rolling window of rolling_window lenght
-        df_agg = df_agg.rolling(str(rolling_window)+'S').mean()
+        
+        # COMMENTED NEXT LINE SO THAT THE STREAMED DATA IS AGGREGATED BY SECOND
+        # ALL FEATURES ARE CREATED IN THE DATA-MODEL-PIPELINE
+        
+        # df_agg = df_agg.rolling(str(rolling_window)+'S').mean()
         # moving the index as a column
         df_agg.reset_index(inplace=True)
         # keeping the last 50 rows (most recent information)
@@ -65,4 +69,5 @@ if __name__=='__main__':
     w = StreamingData()
     w.start()
     while True:
-        w.get_stream_data(rolling_window=30).to_csv('predicted_values.csv')
+        # w.get_stream_data(rolling_window=30).to_csv('predicted_values.csv')
+        w.get_stream_data().to_csv('predicted_values.csv')
