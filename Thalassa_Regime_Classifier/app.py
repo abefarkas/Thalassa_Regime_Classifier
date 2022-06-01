@@ -28,6 +28,7 @@ st.set_page_config(
 st.title("🌊 Thalassa Trading Tool")
 st.write('''
          This app helps fast decision-making by predicting the volatility regime of the cryptomarket in real-time.
+         It is currently monitoring BTCUSDT Futures on Binance.
          ''')
 
 # creating two single-element container
@@ -53,13 +54,14 @@ for seconds in range(500):
             fig1 = go.Figure(go.Indicator(
                 domain = {'x': [0, 1], 'y': [0, 1]},
                 value = predictions['realized_volatility'].iloc[-1],
-                mode = "gauge+number+delta",
-                delta = {'reference': 0.02}, # put here the right delta (high vs low volatility)
+                mode = "gauge+number",#+delta
+                #delta = {'reference': 0.02}, # put here the right delta (high vs low volatility)
                 title = {'text': "Predicted volatility (30 seconds from now)"},
-                gauge = {'axis': {'range': [None, y.max()[0]]},
+                gauge = {'bar': {'color': 'grey'},
+                        'axis': {'range': [None, y.max()[0]]},
                         'steps' : [
-                            {'range': [0, (y.max()[0]/2)], 'color': "lightgray"},
-                            {'range': [(y.max()[0]/2),y.max()[0]], 'color': "gray"}]}))
+                            {'range': [0, (y.max()[0]/2)], 'color': '#00CC96'},
+                            {'range': [(y.max()[0]/2),y.max()[0]], 'color': '#EF553B'}]}))
             st.write(fig1)
 
         with fig_col2:
@@ -102,10 +104,4 @@ for seconds in range(500):
         )
         st.write(fig3)
 
-        #with fig_col4:
-        #    st.markdown("### Predictions")
-        #    fig4 = px.histogram(data_frame = df, x = df['bs3'])
-        #    st.write(fig4)
-
         time.sleep(1)
-    #placeholder.empty()
