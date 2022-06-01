@@ -44,13 +44,21 @@ class DataModelPipeline():
         # log_returns
         self.data['log_returns'] = self.data.log_price.diff()
 
+        # self.data.set_index('primary_key', inplace=True)
+        # self.data = self.data.groupby(pd.Grouper(key='primary_key', axis=0, freq='M')).std()
+        # print(self.data)
+        # self.data['realized_volatility'] = self.data['log_returns']
+        # self.data.reset_index(inplace=True)
 
+        # realized_volatility
+            # y = self.data[['primary_key','log_returns']]
+            # y = y.rolling(30).std()
         sigma = lambda x: (np.nansum(x['log_returns']**2))**0.5
         y = self.data[['primary_key','log_returns']].groupby(['primary_key']).apply(sigma)
 
         self.data = self.data.groupby(['primary_key']).mean()
-        self.data.reset_index(drop=True, inplace=True)
-        self.data['volatility']=y.values
+        self.data.reset_index(drop=False, inplace=True)
+        self.data['realized_volatility']=y.values
             
 
         return self.data
