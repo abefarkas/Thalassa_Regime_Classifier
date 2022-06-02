@@ -35,7 +35,7 @@ st.write('''
          ''')
 
 if st.button('i'):
-    st.write('Why hello there')
+    st.write('Why hello there, let me explain to you how these graphs work.')
 else:
     st.write('')
 
@@ -68,7 +68,7 @@ for seconds in range(10_000):
                 domain = {'x': [0, 1], 'y': [0, 1]},
                 value = sigma_probability,
                 mode = "gauge+number",
-                title = {'text': "Predicted volatility (30 seconds from now)<br><span style='font-size:0.8em;color:#00CC96'>Low volatility regime</span><br><span style='font-size:0.8em;color:#EF553B'>High volatility regime</span><br>"},
+                title = {'text': "Predicted volatility (30 seconds from now)<br><span style='font-size:0.7em;color:#00CC96'>Low volatility regime</span><br><span style='font-size:0.7em;color:#EF553B'>High volatility regime</span><br>"},
                 name = 'hello',
                 gauge = {
                     'bar': {'color': 'grey'},
