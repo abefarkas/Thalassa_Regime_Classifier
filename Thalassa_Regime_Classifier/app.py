@@ -10,39 +10,41 @@ import plotly.express as px
 import plotly.graph_objects as go
 import joblib
 from data_model_flow import DataModelPipeline
+#from streamlit_autorefresh import st_autorefresh
 
 # ------------------------------------------------------------------------------
 
 # instanciate the data-model-flow class
 data_model_pipeline = DataModelPipeline()
-model = joblib.load('model.joblib')
-pca = joblib.load('pca.joblib')
-gaussian_mixture = joblib.load('gaussian_mixture.joblib')
+model = joblib.load('../model.joblib')
+pca = joblib.load('../pca.joblib')
+gaussian_mixture = joblib.load('../gaussian_mixture.joblib')
 
 # ------------------------------------------------------------------------------
 
-try:
+st.set_page_config(
+    page_title = 'Thalassa',
+    page_icon = '🌊',
+    layout = 'wide'
+)
 
-    st.set_page_config(
-        page_title = 'Thalassa',
-        page_icon = '🌊',
-        layout = 'wide'
-    )
+# dashboard title
+st.title("🌊 Thalassa Trading Tool")
+st.write('''
+        This app helps fast decision-making by predicting the volatility regime of the cryptomarket in real-time.
+        It is currently monitoring BTCUSDT Futures on Binance.
+        ''')
 
-    # dashboard title
-    st.title("🌊 Thalassa Trading Tool")
-    st.write('''
-            This app helps fast decision-making by predicting the volatility regime of the cryptomarket in real-time.
-            It is currently monitoring BTCUSDT Futures on Binance.
-            ''')
+# creating two single-element container
+placeholder1 = st.empty()
+placeholder2 = st.empty()
 
-    # creating two single-element container
-    placeholder1 = st.empty()
-    placeholder2 = st.empty()
+# near real-time / live feed simulation
 
-    # near real-time / live feed simulation
+while True:
+    try:
+        time.sleep(0.5)
 
-    while True:
         data = pd.read_csv("predicted_values.csv")
 
         df = data_model_pipeline.financial_features(data)
@@ -73,6 +75,8 @@ try:
                         'steps' : [
                             {'range': [0, cut_off], 'color': '#00CC96'},
                             {'range': [cut_off, sigma_max], 'color': '#EF553B'}]}))
+
+                fig1.update_layout(font = {'color': "#636EFA"})
 
                 st.plotly_chart(fig1, use_container_width=True)
 
@@ -117,8 +121,5 @@ try:
             )
             #st.write(fig3)
             st.plotly_chart(fig3, use_container_width=True)
-
-            #time.sleep(1)
-
-except:
-    pass
+    except:
+        pass
