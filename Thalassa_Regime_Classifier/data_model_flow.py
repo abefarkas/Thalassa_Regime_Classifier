@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
+from sklearn.mixture import GaussianMixture
+from sklearn.decomposition import PCA
 from sklearn.preprocessing import MinMaxScaler
 from datetime import datetime, timezone, timedelta
 import joblib
@@ -94,7 +96,7 @@ class DataModelPipeline():
         self.X = pd.DataFrame(self.preprocessing.fit_transform(X), columns=self.preprocessing.get_feature_names_out())
         return self.y, self.X
 
-    def predict(self, model):
+    def predict(self, model, pca, gaussian_mixture):
 
         lag = 0
 
@@ -110,7 +112,27 @@ class DataModelPipeline():
 
         predictions = model.predict(X_.tail(1))
         predictions = pd.DataFrame.from_dict({'realized_volatility':predictions})
-        return predictions
+
+        # PCA & GaussianMixture
+        new_y = pd.concat((
+            predictions.tail(1),
+            y.shift(lag).rename(columns={'realized_volatility':'lag_y'}).tail(1).reset_index(drop=True),
+            self.X['spread'].shift(lag).tail(1).reset_index(drop=True),
+            self.X['spread_sq'].shift(lag).tail(1).reset_index(drop=True),
+            self.X['BBAOFI'].shift(lag).tail(1).reset_index(drop=True),
+            self.X['FDOFI'].shift(lag).tail(1).reset_index(drop=True)
+            ), axis=1)
+
+        X_emb = pca.transform(new_y.values[:,1:])
+        X_emb = np.concatenate((new_y.values[:,0].reshape(new_y.shape[0],-1),X_emb),axis=1)
+        new_y = pd.DataFrame(X_emb, columns=('volatility', 'predictors'))
+
+        labels = gaussian_mixture.predict(new_y)
+        probs = gaussian_mixture.predict_proba(new_y)[:,1] # 0: high volatility, 1: low volatility
+
+        prediction_regimes = pd.concat((new_y,pd.DataFrame({'labels':labels, 'probs':probs})), axis=1).dropna()
+
+        return predictions, prediction_regimes
 
 
 if __name__=='__main__':
@@ -125,6 +147,8 @@ if __name__=='__main__':
     y, X = data_model_pipeline.pipeline(df)
 
     model = joblib.load('../model.joblib')
+    pca = joblib.load('../pca.joblib')
+    gaussian_mixture = joblib.load('../gaussian_mixture.joblib')
+
     # predicting a model with new values for endogenous variable
-    predictions = data_model_pipeline.predict(model=model)
-    print(predictions)
+    predictions, regimes = data_model_pipeline.predict(model=model, pca=pca, gaussian_mixture=gaussian_mixture)

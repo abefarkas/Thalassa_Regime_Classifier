@@ -1,6 +1,7 @@
 #from asyncio.windows_utils import pipe
+from turtle import width
 from matplotlib.axis import XAxis
-from matplotlib.pyplot import title, xlabel, ylabel
+from matplotlib.pyplot import legend, title, xlabel, ylabel
 import streamlit as st
 import numpy as np # np mean, np random
 import pandas as pd
@@ -15,6 +16,8 @@ from data_model_flow import DataModelPipeline
 # instanciate the data-model-flow class
 data_model_pipeline = DataModelPipeline()
 model = joblib.load('../model.joblib')
+pca = joblib.load('../pca.joblib')
+gaussian_mixture = joblib.load('../gaussian_mixture.joblib')
 
 # ------------------------------------------------------------------------------
 
@@ -31,19 +34,23 @@ st.write('''
          It is currently monitoring BTCUSDT Futures on Binance.
          ''')
 
+if st.button('i'):
+    st.write('Why hello there, let me explain to you how these graphs work.')
+else:
+    st.write('')
+
 # creating two single-element container
 placeholder1 = st.empty()
 placeholder2 = st.empty()
 
 # near real-time / live feed simulation
 
-for seconds in range(500):
+for seconds in range(10_000):
     data = pd.read_csv("predicted_values.csv")
 
     df = data_model_pipeline.financial_features(data)
     y, X = data_model_pipeline.pipeline(df)
-    predictions = data_model_pipeline.predict(model=model)
-    print(predictions)
+    predictions, regimes = data_model_pipeline.predict(model=model, pca=pca, gaussian_mixture=gaussian_mixture)
 
     with placeholder1.container():
 
@@ -51,18 +58,26 @@ for seconds in range(500):
         fig_col1, fig_col2 = st.columns(2)
         with fig_col1:
             st.markdown("### Volatility Gauge")
+
+            regime_probability = regimes['probs'].values[0]
+            sigma_max = y.max()[0]
+            sigma_probability = predictions['realized_volatility'].iloc[-1]
+            cut_off = sigma_probability*2 - sigma_max + 2*(sigma_max - sigma_probability)*regime_probability
+
             fig1 = go.Figure(go.Indicator(
                 domain = {'x': [0, 1], 'y': [0, 1]},
-                value = predictions['realized_volatility'].iloc[-1],
-                mode = "gauge+number",#+delta
-                #delta = {'reference': 0.02}, # put here the right delta (high vs low volatility)
-                title = {'text': "Predicted volatility (30 seconds from now)"},
-                gauge = {'bar': {'color': 'grey'},
-                        'axis': {'range': [None, y.max()[0]]},
-                        'steps' : [
-                            {'range': [0, (y.max()[0]/2)], 'color': '#00CC96'},
-                            {'range': [(y.max()[0]/2),y.max()[0]], 'color': '#EF553B'}]}))
-            st.write(fig1)
+                value = sigma_probability,
+                mode = "gauge+number",
+                title = {'text': "Predicted volatility (30 seconds from now)<br><span style='font-size:0.7em;color:#00CC96'>Low volatility regime</span><br><span style='font-size:0.7em;color:#EF553B'>High volatility regime</span><br>"},
+                name = 'hello',
+                gauge = {
+                    'bar': {'color': 'grey'},
+                    'axis': {'range': [None, sigma_max]},
+                    'steps' : [
+                        {'range': [0, cut_off], 'color': '#00CC96'},
+                        {'range': [cut_off, sigma_max], 'color': '#EF553B'}]}))
+
+            st.plotly_chart(fig1, use_container_width=True)
 
         with fig_col2:
             st.markdown("### Depth Chart")
@@ -85,7 +100,7 @@ for seconds in range(500):
             fig2.add_trace(go.Scatter(x=x, y=asks, mode='lines', fill='tozeroy', name='Asks')) # fill to trace0 y
             fig2.update_xaxes(title='Prices')
             fig2.update_yaxes(title='Size', range=(0,np.max(bids+asks)))
-            st.write(fig2)
+            st.plotly_chart(fig2, use_container_width=True)
 
 
     with placeholder2.container():
@@ -101,7 +116,9 @@ for seconds in range(500):
         fig3.update_layout(
             xaxis_title = 'Time',
             yaxis_title = 'Realized volatility'
+            #width=1000
         )
-        st.write(fig3)
+        #st.write(fig3)
+        st.plotly_chart(fig3, use_container_width=True)
 
         time.sleep(1)

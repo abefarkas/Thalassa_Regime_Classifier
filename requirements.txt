@@ -40,3 +40,15 @@ streamlit
 typing_extensions==4.0.1
 websocket-client
 watchdog
+
+tensorboard==2.8.0
+tensorboard-data-server==0.6.1
+tensorboard-plugin-wit==1.8.1
+tensorflow==2.8.2
+tensorflow-datasets==4.0.1
+tensorflow-estimator==2.8.0
+tensorflow-gcs-config==2.8.0
+tensorflow-hub==0.12.0
+tensorflow-io-gcs-filesystem==0.26.0
+tensorflow-metadata==1.8.0
+tensorflow-probability==0.16.0
