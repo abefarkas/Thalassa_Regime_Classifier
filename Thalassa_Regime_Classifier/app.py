@@ -14,7 +14,7 @@ from data_model_flow import DataModelPipeline
 
 # instanciate the data-model-flow class
 data_model_pipeline = DataModelPipeline()
-model = joblib.load('../model.joblib')
+model = joblib.load('model.joblib')
 
 # ------------------------------------------------------------------------------
 
@@ -43,7 +43,6 @@ for seconds in range(500):
     df = data_model_pipeline.financial_features(data)
     y, X = data_model_pipeline.pipeline(df)
     predictions = data_model_pipeline.predict(model=model)
-    print(predictions)
 
     with placeholder1.container():
 
