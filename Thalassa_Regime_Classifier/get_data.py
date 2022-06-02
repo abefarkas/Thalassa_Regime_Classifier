@@ -26,4 +26,3 @@ df_agg.drop(columns=['timestamp','less30s','last_update_id','ts'], inplace=True)
 df_agg = df_agg.groupby(['primary_key']).mean()
 df_agg.reset_index(inplace=True)
 df_agg.to_csv(os.path.join(path_to_raw_data,'raw_data','data_set.csv'))
-
