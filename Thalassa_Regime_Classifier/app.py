@@ -1,4 +1,5 @@
 #from asyncio.windows_utils import pipe
+from tkinter import font
 from turtle import width
 from matplotlib.axis import XAxis
 from matplotlib.pyplot import legend, title, xlabel, ylabel
@@ -16,9 +17,9 @@ from data_model_flow import DataModelPipeline
 
 # instanciate the data-model-flow class
 data_model_pipeline = DataModelPipeline()
-model = joblib.load('../model.joblib')
-pca = joblib.load('../pca.joblib')
-gaussian_mixture = joblib.load('../gaussian_mixture.joblib')
+model = joblib.load('model.joblib')
+pca = joblib.load('pca.joblib')
+gaussian_mixture = joblib.load('gaussian_mixture.joblib')
 
 # ------------------------------------------------------------------------------
 
@@ -41,6 +42,8 @@ placeholder2 = st.empty()
 
 # near real-time / live feed simulation
 
+sigma_max = .12
+
 while True:
     try:
         time.sleep(0.5)
@@ -59,7 +62,7 @@ while True:
                 st.markdown("### Volatility Gauge")
 
                 regime_probability = regimes['probs'].values[0]
-                sigma_max = y.max()[0]
+                sigma_max = np.max([y.max()[0],sigma_max]) # sigma_max=y.max()[0]
                 sigma_probability = predictions['realized_volatility'].iloc[-1]
                 cut_off = sigma_probability*2 - sigma_max + 2*(sigma_max - sigma_probability)*regime_probability
 
@@ -67,7 +70,7 @@ while True:
                     domain = {'x': [0, 1], 'y': [0, 1]},
                     value = sigma_probability,
                     mode = "gauge+number",
-                    title = {'text': "<br><span style='font-size:0.7em;color:#636EFA'>Predicted volatility (30 seconds from now)<br><span style='font-size:0.7em;color:#00CC96'>Low volatility regime</span><br><span style='font-size:0.7em;color:#EF553B'>High volatility regime</span><br>"},
+                    title = {'text': "<br><span style='font-size:0.8em;color:#636EFA'>Predicted volatility (30 sec. from now)</span><br><span style='font-size:0.8em;color:#00CC96'>Low volatility regime</span><br><span style='font-size:0.8em;color:#EF553B'>High volatility regime</span><br>"},
                     name = 'hello',
                     gauge = {
                         'bar': {'color': '#636EFA'},
@@ -101,6 +104,8 @@ while True:
                 fig2.add_trace(go.Scatter(x=x, y=asks, mode='lines', fill='tozeroy', name='Asks')) # fill to trace0 y
                 fig2.update_xaxes(title='Prices')
                 fig2.update_yaxes(title='Size', range=(0,np.max(bids+asks)))
+                fig2.update_layout(legend=dict(font=dict(size=14)))
+
                 st.plotly_chart(fig2, use_container_width=True)
 
 
